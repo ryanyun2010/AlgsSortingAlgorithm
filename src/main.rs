@@ -105,17 +105,48 @@ fn generate_random_f64s(x: usize) -> Vec<f64> {
 
 
 
-const FLOATS: usize = 2000000;
+
+fn insertion_sort(arr: &mut [f64]) {
+    for i in 1..arr.len() {
+        let key = arr[i];
+        let mut j = i as isize - 1;
+
+        while j >= 0 && arr[j as usize] > key {
+            arr[(j + 1) as usize] = arr[j as usize];
+            j -= 1;
+        }
+
+        arr[(j + 1) as usize] = key;
+    }
+}
+fn bubble_sort(arr: &mut [f64]) {
+    let n = arr.len();
+    
+    for i in 0..n {
+        let mut swapped = false;
+
+        for j in 0..n - 1 - i {
+            if arr[j] > arr[j + 1] {
+                arr.swap(j, j + 1);
+                swapped = true;
+            }
+        }
+
+        if !swapped {
+            break;
+        }
+    }
+}
+
+const FLOATS: usize = 50000;
 #[tokio::main]
 pub async fn main() {
     let arr = generate_random_f64s(FLOATS);
     println!("Sorting {} floats", FLOATS);
-
-
     let time = std::time::Instant::now();
-    let mut sorted_dumb = arr.clone();
-    sorted_dumb.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    println!("Time taken by simple rust sort (O(nlog(n)): {:?}", time.elapsed());
+    let sorted_dumb = &mut arr.clone()[..];
+    bubble_sort(sorted_dumb);
+    println!("Time taken by simple bubble sort: {:?}", time.elapsed());
     let mut times = vec![];
     for i in 1..20 {
         let time = std::time::Instant::now();
